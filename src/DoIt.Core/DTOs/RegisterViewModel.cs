@@ -15,7 +15,7 @@ namespace DoIt.Core.DTOs
 
         [Required]
         [MaxLength(120)]
-        [RegularExpression("^[a-zA-Z0-9]+$",ErrorMessage = "Username must have at least one letter or number");
+        [RegularExpression("^[a-zA-Z0-9]+$", ErrorMessage = "Username must have at least one letter or number")]
         public string Username { get; set; }
 
         [Required]
