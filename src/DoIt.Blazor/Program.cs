@@ -1,10 +1,27 @@
 using DoIt.Blazor.Components;
+using DoIt.Core.Interfaces;
+using DoIt.Core.Services;
+using DoIt.Data.Context;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Add database context
+builder.Services.AddDbContext<DoItDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DoItDbConnection"));
+});
+
+// Add database exception filter (only development)
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+// Add services to the container
+builder.Services.AddTransient<IUserService, UserService>();
+
 
 var app = builder.Build();
 
