@@ -1,7 +1,9 @@
 ﻿@page "/register"
 @layout Layout.EmptyLayout
+
 @inject NavigationManager NavigationManager
 @inject IUserService UserService
+
 @rendermode InteractiveServer
 
 <section class="vh-auto gradient-custom">
@@ -15,41 +17,55 @@
                             <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
                             <p class="text-black-50 mb-5">Please enter your information!</p>
 
-                            <EditForm method="post" EditContext="editContext" OnValidSubmit="Submit" Enhance>
-                                    
-                                <DataAnnotationsValidator/>
+                            <!-- Show successful alert -->
+                            @if (registered)
+                            {
+                                <div class="alert alert-success" role="alert">
+                                    Registration was <strong>successful!</strong>
+                                </div>
+                            }
 
+                            <!-- Registration form -->
+                            <EditForm method="post" EditContext="editContext" OnValidSubmit="Submit" Enhance>
+
+                                <DataAnnotationsValidator />
+
+                                <!-- Name -->
                                 <div class="text-start mb-4">
                                     <label class="form-label" for="name">Name</label>
-                                    <InputText @bind-Value="ViewModel!.Name" id="name" class="form-control"/>
+                                    <InputText @bind-Value="ViewModel!.Name" id="name" class="form-control" />
                                     <ValidationMessage For="() => ViewModel!.Name" class="text-danger" />
                                 </div>
 
+                                <!-- Username -->
                                 <div class="text-start mb-4">
                                     <label class="form-label" for="userName">Username</label>
-                                    <InputText @bind-Value="ViewModel!.Username" id="userName" class="form-control" required/>
+                                    <InputText @bind-Value="ViewModel!.Username" id="userName" class="form-control" required />
                                     <ValidationMessage For="() => ViewModel!.Username" class="text-danger" />
                                 </div>
 
+                                <!-- Password -->
                                 <div class="text-start mb-4">
                                     <label class="form-label" for="password">Password</label>
                                     <InputText type="password" @bind-Value="ViewModel!.Password" id="password" class="form-control" required />
                                     <ValidationMessage For="() => ViewModel!.Password" class="text-danger" />
                                 </div>
 
-
+                                <!-- Password Confirmation -->
                                 <div class="text-start mb-4">
                                     <label class="form-label" for="confirmation">Confirmation</label>
                                     <InputText type="password" @bind-Value="ViewModel!.Confirmation" id="confirmation" class="form-control" required />
                                     <ValidationMessage For="() => ViewModel!.Confirmation" class="text-danger" />
                                 </div>
 
+                                <!-- Submit button -->
                                 <button class="btn btn-outline-dark btn-lg px-5" type="submit">Register</button>
 
                             </EditForm>
 
                         </div>
 
+                        <!-- For someone that already have account -->
                         <div>
                             <p class="mb-0">
                                 Already have an account? <a href="/login" class="text-balck-50 fw-bold">Sign In</a>
@@ -65,40 +81,65 @@
 
 
 @code {
+    // Register form view model
     [SupplyParameterFromForm]
-    public RegisterViewModel ViewModel { get; set; }
+    private RegisterViewModel ViewModel { get; set; }
 
+    // Variable for show register success alert
+    private bool registered = false;
+
+    // Form context
     private EditContext? editContext;
+
+    // Form validation message store
     private ValidationMessageStore? messageStore;
 
+    // Initialize page
     protected override void OnInitialized()
     {
         ViewModel ??= new();
         editContext = new(ViewModel);
+
+        // Add validation request event to form context 
         editContext.OnValidationRequested += HandleValidationRequested;
+
+        // Initialize validation message store with form context
         messageStore = new(editContext);
     }
 
     public void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)
     {
-        messageStore.Clear();
+        // Clear previous validation messages
+        messageStore?.Clear();
 
+        // Check this username has registered
         if (UserService.UsernameExist(ViewModel.Username))
         {
+            // Add validation message for existing username
             messageStore?.Add(() => ViewModel.Username, "This username already exist");
         }
     }
 
-    private void Submit()
+    // Submit form data
+    private async Task Submit()
     {
-
+        // Register user
         int result = UserService.RegisterUser(ViewModel);
 
-        NavigationManager.NavigateTo("/login");
+        // Check result of registration
+        if(result > 0)
+        {
+            // Show registration success alert, 2 second remain this page then navigate to login page
+            registered = true;
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            NavigationManager.NavigateTo("/login");
+        }
     }
 
+    // Dispose this page
     public void Dispose()
     {
+        // Check form context initialized then remove event handler
         if (editContext is not null)
         {
             editContext.OnValidationRequested -= HandleValidationRequested;
