@@ -5,27 +5,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DoIt.Core.DTOs
+namespace DoIt.Core.DTOs.Account
 {
     public class RegisterViewModel
     {
-        [Required]
-        [MaxLength(120)]
-        public string Name { get; set; }
 
         [Required]
         [MaxLength(120)]
-        [RegularExpression("^[a-zA-Z0-9]+$", ErrorMessage = "Username must have at least one letter or number")]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         [Required]
-        [StringLength(64)]
+        [MaxLength(120)]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [StringLength(20,MinimumLength = 6)]
         [DataType(DataType.Password)]
         [RegularExpression("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W_]).{6,}$", ErrorMessage = "Password must be between 6 and 20 characters and contain one uppercase letter, one lowercase letter and one non alphanumeric letter.")]
         public string Password { get; set; }
 
         [Required]
-        [StringLength(64)]
+        [MaxLength(20)]
         [DataType(DataType.Password)]
         [Compare(nameof(Password))]
         public string Confirmation { get; set; }

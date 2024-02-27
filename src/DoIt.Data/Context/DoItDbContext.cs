@@ -1,4 +1,5 @@
 ﻿using DoIt.Data.Entities.Users;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,13 +9,12 @@ using System.Threading.Tasks;
 
 namespace DoIt.Data.Context
 {
-    public class DoItDbContext : DbContext
+    public class DoItDbContext : IdentityDbContext<AppUser>
     {
         public DoItDbContext(DbContextOptions<DoItDbContext> options) : base(options) { }
 
         #region DB Sets
 
-        public DbSet<User> Users { get; set; }
 
         #endregion
     }

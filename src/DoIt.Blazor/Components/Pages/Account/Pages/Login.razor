@@ -1,0 +1,96 @@
+﻿@page "/Account/Login"
+
+@using DoIt.Core.DTOs.Account
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager NavigationManager
+@inject IUserService UserService
+
+@rendermode InteractiveServer
+
+<section class="vh-auto gradient-custom">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+
+                        <div class="mb-md-3 mt-md-4 pb-5">
+                            <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+                            <p class="text-black-50 mb-5">Please enter your email and password!</p>
+
+                           
+
+                        </div>
+
+                        <!-- For someone that don't have account -->
+                        <div>
+                            <p class="mb-0">
+                                Don't have an account? <a href="/login" class="link-secondary text-decoration-none">Register</a>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@code {
+    // // Login form view model
+    // [SupplyParameterFromForm]
+    // private LoginViewModel ViewModel { get; set; }
+
+    // // Form context
+    // private EditContext? editContext;
+
+    // // Form validation message store
+    // private ValidationMessageStore? messageStore;
+
+    // // Initialize page
+    // protected override void OnInitialized()
+    // {
+    //     ViewModel ??= new();
+    //     editContext = new(ViewModel);
+
+    //     // Add validation request event to form context
+    //     editContext.OnValidationRequested += HandleValidationRequested;
+
+    //     // Initialize validation message store with form context
+    //     messageStore = new(editContext);
+    // }
+
+    // public void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)
+    // {
+    //     // Clear previous validation messages
+    //     messageStore?.Clear();
+
+    //     // Check this username has registered
+    //     if (UserService.UsernameExist(ViewModel.Username))
+    //     {
+    //         // Add validation message for existing username
+    //         messageStore?.Add(() => ViewModel.Username, "This username already exist");
+    //     }
+    // }
+
+    // // Submit form data
+    // private async Task Submit()
+    // {
+    //     // Login user
+    //     int result = UserService.LoginUser(ViewModel);
+
+        
+    // }
+
+    // // Dispose this page
+    // public void Dispose()
+    // {
+    //     // Check form context initialized then remove event handler
+    //     if (editContext is not null)
+    //     {
+    //         editContext.OnValidationRequested -= HandleValidationRequested;
+    //     }
+    // }
+}

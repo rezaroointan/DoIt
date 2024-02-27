@@ -5,29 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DoIt.Data.Entities.Users
+namespace DoIt.Core.DTOs.Account
 {
-    public class User
+    public class LoginViewModel
     {
-        [Key]
-        public int Id { get; set; }
-
-        [Required]
-        [MaxLength(120)]
-        public string Name { get; set; }
-
         [Required]
         [MaxLength(120)]
         public string Username { get; set; }
 
         [Required]
-        [StringLength(64)]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
-
-
-        #region Relations
-
-        #endregion
-
     }
 }

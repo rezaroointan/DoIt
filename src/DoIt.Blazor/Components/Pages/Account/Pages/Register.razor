@@ -1,0 +1,143 @@
+﻿@page "/Account/Register"
+
+@using DoIt.Core.DTOs.Account
+@using DoIt.Data.Entities.Users
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<AppUser> UserManager
+@inject IUserStore<AppUser> UserStore
+@inject SignInManager<AppUser> SignInManager
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Register</PageTitle>
+
+<section class="vh-auto gradient-custom">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+
+                        <div class="mb-md-3 mt-md-4 pb-5">
+                            <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
+                            <p class="text-black-50 mb-5">Please enter your information!</p>
+
+                            <StatusMessage Message="@Message" />
+
+                            <!-- Registration form -->
+                            <EditForm Model="ViewModel" method="post" OnValidSubmit="RegisterUser" FormName="register" Enhance>
+
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+
+                                <!-- Username -->
+                                <div class="form-floating mb-3">
+                                    <InputText @bind-Value="ViewModel!.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="username234" />
+                                    <label for="userName">Username</label>
+                                    <ValidationMessage For="() => ViewModel!.UserName" class="text-danger" />
+                                </div>
+
+                                <!-- Email -->
+                                <div class="form-floating mb-3">
+                                    <InputText @bind-Value="ViewModel!.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="example@email.com" />
+                                    <label for="email">Email</label>
+                                    <ValidationMessage For="() => ViewModel!.Email" class="text-danger" />
+                                </div>
+
+                                <!-- Password -->
+                                <div class="form-floating mb-3">
+                                    <InputText type="password" @bind-Value="ViewModel!.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                                    <label for="password">Password</label>
+                                    <ValidationMessage For="() => ViewModel!.Password" class="text-danger" />
+                                </div>
+
+                                <!-- Password Confirmation -->
+                                <div class="form-floating mb-3">
+                                    <InputText type="password" @bind-Value="ViewModel!.Confirmation" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                                    <label for="confirmation">Confirmation</label>
+                                    <ValidationMessage For="() => ViewModel!.Confirmation" class="text-danger" />
+                                </div>
+
+
+                                <button class="btn btn-outline-dark btn-lg px-5" type="submit">Register</button>
+
+                            </EditForm>
+
+                        </div>
+
+                        <!-- For someone that already have account -->
+                        <div>
+                            <p class="mb-0">
+                                Already have an account? <a href="/login" class="link-secondary text-decoration-none">Login</a>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@code {
+
+    // To catch errors that occur in user registration
+    private IEnumerable<IdentityError>? identityErrors;
+
+    // Register form view model
+    [SupplyParameterFromForm]
+    private RegisterViewModel ViewModel { get; set; } = new();
+
+    // Get identity errors for StatusMessage
+    private string? Message => identityErrors is null ? null : $"Error: {string.Join(",", identityErrors.Select(error => error.Description))}";
+
+    public async Task RegisterUser(EditContext editContext)
+    {
+        // Create an instance of AppUser
+        var user = CreateUser();
+
+        // Get user name from input view model
+        await UserStore.SetUserNameAsync(user, ViewModel.UserName, CancellationToken.None);
+
+        // TODO: Email confirmation
+        var emailStore = GetEmailStore();
+        await emailStore.SetEmailAsync(user, ViewModel.Email, CancellationToken.None);
+
+        // Register user with password
+        var result = await UserManager.CreateAsync(user, ViewModel.Password);
+
+        // Check registration was successful    
+        if(!result.Succeeded)
+        {
+            identityErrors = result.Errors;
+            return;
+        }
+
+        // Show registration message
+        RedirectManager.RedirectTo("/Account/Login");
+    }
+
+    private AppUser CreateUser()
+    {
+        try
+        {
+            return Activator.CreateInstance<AppUser>();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(AppUser)}'. Ensure that '{nameof(AppUser)}' is not an abstract class and has a parameterless constructor");
+        }
+    }
+
+    private IUserEmailStore<AppUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<AppUser>)UserStore;
+    }
+
+}
