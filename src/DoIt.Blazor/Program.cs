@@ -36,10 +36,15 @@ builder.Services.AddDbContext<DoItDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Add identity core
-builder.Services.AddIdentityCore<AppUser>()
+builder.Services.AddIdentityCore<AppUser>(options => { 
+    options.SignIn.RequireConfirmedAccount = true;
+    options.User.RequireUniqueEmail = true; })
     .AddEntityFrameworkStores<DoItDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
+
+// Email sender service
+builder.Services.AddTransient<IEmailSender<AppUser>, IdentityEmailSender>();
 
 // Add services to the container
 builder.Services.AddTransient<IUserService, UserService>();

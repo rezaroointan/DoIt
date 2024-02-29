@@ -3,16 +3,20 @@
 @using DoIt.Core.DTOs.Account
 @using DoIt.Data.Entities.Users
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Text
+@using System.Text.Encodings.Web
 
 @inject UserManager<AppUser> UserManager
 @inject IUserStore<AppUser> UserStore
 @inject SignInManager<AppUser> SignInManager
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject IEmailSender<AppUser> EmailSender;
 
 <PageTitle>Register</PageTitle>
 
-<section class="vh-auto gradient-custom">
+<section class="min-vh-100 gradient-custom">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-12 col-md-8 col-lg-6 col-xl-5">
@@ -26,7 +30,7 @@
                             <StatusMessage Message="@Message" />
 
                             <!-- Registration form -->
-                            <EditForm Model="ViewModel" method="post" OnValidSubmit="RegisterUser" FormName="register" Enhance>
+                            <EditForm Model="ViewModel" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register" Enhance>
 
                                 <DataAnnotationsValidator />
                                 <ValidationSummary />
@@ -68,7 +72,7 @@
 
                         <!-- For someone that already have account -->
                         <div>
-                            <p class="mb-0">
+                            <p class="mb-0">chrme
                                 Already have an account? <a href="/login" class="link-secondary text-decoration-none">Login</a>
                             </p>
                         </div>
@@ -90,6 +94,9 @@
     [SupplyParameterFromForm]
     private RegisterViewModel ViewModel { get; set; } = new();
 
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
     // Get identity errors for StatusMessage
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(",", identityErrors.Select(error => error.Description))}";
 
@@ -98,10 +105,8 @@
         // Create an instance of AppUser
         var user = CreateUser();
 
-        // Get user name from input view model
+        // Get user info from input view model
         await UserStore.SetUserNameAsync(user, ViewModel.UserName, CancellationToken.None);
-
-        // TODO: Email confirmation
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, ViewModel.Email, CancellationToken.None);
 
@@ -115,8 +120,29 @@
             return;
         }
 
-        // Show registration message
-        RedirectManager.RedirectTo("/Account/Login");
+        // Init email confirmation
+        var userId = await UserManager.GetUserIdAsync(user);
+        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+
+        // Send email confirmation
+        await EmailSender.SendConfirmationLinkAsync(user, ViewModel.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+        // Check if account confirmation is required
+        if (UserManager.Options.SignIn.RequireConfirmedAccount)
+        {
+            // Redirect to the register confirmation page
+            RedirectManager.RedirectTo(
+                "Account/RegisterConfirmation",
+                new() { ["email"] = ViewModel.Email, ["returnUrl"] = ReturnUrl });
+        }
+
+        // Sign in user with no persistent and redirect to the return url
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        RedirectManager.RedirectTo(ReturnUrl);
     }
 
     private AppUser CreateUser()
