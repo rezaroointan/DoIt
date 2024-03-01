@@ -10,11 +10,13 @@ namespace DoIt.Core.DTOs.Account
     public class LoginViewModel
     {
         [Required]
-        [MaxLength(120)]
-        public string Username { get; set; }
+        public string EmailOrUserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        [Display(Name = "Remember me?")]
+        public bool RememberMe { get; set; }
     }
 }

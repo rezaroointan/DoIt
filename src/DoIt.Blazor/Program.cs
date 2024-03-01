@@ -36,9 +36,17 @@ builder.Services.AddDbContext<DoItDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Add identity core
-builder.Services.AddIdentityCore<AppUser>(options => { 
+builder.Services.AddIdentityCore<AppUser>(options => 
+{ 
+    // Set account requirement for login
     options.SignIn.RequireConfirmedAccount = true;
-    options.User.RequireUniqueEmail = true; })
+    // Set email requirement for user register
+    options.User.RequireUniqueEmail = true;
+
+    // Lock out options '5 min after 5 attempt'
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+})
     .AddEntityFrameworkStores<DoItDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();

@@ -1,12 +1,17 @@
 ﻿@page "/Account/Login"
 
 @using DoIt.Core.DTOs.Account
+@using DoIt.Data.Entities.Users
+@using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using System.Net.Mail
+@using Microsoft.EntityFrameworkCore
 
 @inject NavigationManager NavigationManager
-@inject IUserService UserService
-
-@rendermode InteractiveServer
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+@inject IdentityRedirectManager RedirectManager
 
 <section class="vh-auto gradient-custom">
     <div class="container py-5 h-100">
@@ -19,14 +24,47 @@
                             <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
                             <p class="text-black-50 mb-5">Please enter your email and password!</p>
 
-                           
+                            <StatusMessage Message="@errorMessage" />
+
+                            <!-- Login form -->
+                            <EditForm method="post" Model="ViewModel" OnValidSubmit="LoginUser" FormName="login" Enhance>
+
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+
+                                <!-- Username/Email-->
+                                <div class="form-floating mb-3">
+                                    <InputText @bind-Value="ViewModel!.EmailOrUserName" class="form-control" autocomplete="username" aria-required="true" placeholder="username or email" />
+                                    <label for="email">Username | Email</label>
+                                    <ValidationMessage For="() => ViewModel!.EmailOrUserName" class="text-danger" />
+                                </div>
+
+                                <!-- Password -->
+                                <div class="form-floating mb-3">
+                                    <InputText type="password" @bind-Value="ViewModel!.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                                    <label class="form-label" for="password">Password</label>
+                                    <ValidationMessage For="() => ViewModel!.Password" class="text-danger" />
+                                </div>
+
+                                <!-- Remember me -->
+                                <div class="checkbox text-start mb-3">
+                                    <label class="form-label">
+                                        <InputCheckbox @bind-Value="ViewModel.RememberMe" class="darker-border-checkbox form-check-input" />
+                                        Remember me
+                                    </label>
+                                </div>
+
+                                <!-- Submit button -->
+                                <button class="btn btn-outline-dark btn-lg px-5" type="submit">Login</button>
+
+                            </EditForm>
 
                         </div>
 
                         <!-- For someone that don't have account -->
                         <div>
                             <p class="mb-0">
-                                Don't have an account? <a href="/login" class="link-secondary text-decoration-none">Register</a>
+                                <a class="link-secondary text-decoration-none" href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
                             </p>
                         </div>
 
@@ -39,58 +77,58 @@
 
 
 @code {
-    // // Login form view model
-    // [SupplyParameterFromForm]
-    // private LoginViewModel ViewModel { get; set; }
+    // Message text for status message
+    private string? errorMessage;
 
-    // // Form context
-    // private EditContext? editContext;
+    // Http context for use http information
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
 
-    // // Form validation message store
-    // private ValidationMessageStore? messageStore;
+    // Login form view model
+    [SupplyParameterFromForm]
+    private LoginViewModel ViewModel { get; set; } = new();
 
-    // // Initialize page
-    // protected override void OnInitialized()
-    // {
-    //     ViewModel ??= new();
-    //     editContext = new(ViewModel);
+    // URL requested by the user
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
 
-    //     // Add validation request event to form context
-    //     editContext.OnValidationRequested += HandleValidationRequested;
+    protected override async Task OnInitializedAsync()
+    {
+        // Check request method is GET the clear the existing external cookie
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+        }
+    }
 
-    //     // Initialize validation message store with form context
-    //     messageStore = new(editContext);
-    // }
+    public async Task LoginUser()
+    {
+        // Retrieve user by email
+        var user = await UserManager.FindByEmailAsync(ViewModel.EmailOrUserName);
 
-    // public void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)
-    // {
-    //     // Clear previous validation messages
-    //     messageStore?.Clear();
+        // Check user with input email is exist
+        if (user is not null)
+        {
+            // Get username instead of email for login
+            ViewModel.EmailOrUserName = user.UserName;
+        }
 
-    //     // Check this username has registered
-    //     if (UserService.UsernameExist(ViewModel.Username))
-    //     {
-    //         // Add validation message for existing username
-    //         messageStore?.Add(() => ViewModel.Username, "This username already exist");
-    //     }
-    // }
+        // Sign in with username and password
+        var result = await SignInManager.PasswordSignInAsync(ViewModel.EmailOrUserName, ViewModel.Password, ViewModel.RememberMe, lockoutOnFailure: true);
 
-    // // Submit form data
-    // private async Task Submit()
-    // {
-    //     // Login user
-    //     int result = UserService.LoginUser(ViewModel);
-
-        
-    // }
-
-    // // Dispose this page
-    // public void Dispose()
-    // {
-    //     // Check form context initialized then remove event handler
-    //     if (editContext is not null)
-    //     {
-    //         editContext.OnValidationRequested -= HandleValidationRequested;
-    //     }
-    // }
+        // Check login result is succeeded
+        if (result.Succeeded)
+        {
+            RedirectManager.RedirectTo(ReturnUrl);
+        }
+        // Check user account lock outed
+        else if (result.IsLockedOut)
+        {
+            RedirectManager.RedirectTo("Account/Lockout");
+        }
+        else
+        {
+            errorMessage = "Error: Invalid login attempt.";
+        }
+    }
 }
