@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Task = DoIt.Data.Entities.Tasks.Task;
 
 namespace DoIt.Data.Entities.Users
 {
@@ -14,6 +14,8 @@ namespace DoIt.Data.Entities.Users
 
 
         #region Relations
+
+        public ICollection<Task> Tasks { get; set; }
 
         #endregion
 

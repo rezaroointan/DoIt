@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using Task = DoIt.Data.Entities.Tasks.Task;
 
 namespace DoIt.Data.Context
 {
@@ -13,8 +13,14 @@ namespace DoIt.Data.Context
     {
         public DoItDbContext(DbContextOptions<DoItDbContext> options) : base(options) { }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
+
         #region DB Sets
 
+        public DbSet<Task> Tasks { get; set; }
 
         #endregion
     }
