@@ -25,7 +25,7 @@ namespace DoIt.Data.Entities.Tasks
 
         public TimeOnly Reminder { get; set; }
 
-        public TimeOnly TimeBlock { get; set; }
+        public TimeSpan TimeBlock { get; set; }
 
         public string UserId { get; set; }
 
