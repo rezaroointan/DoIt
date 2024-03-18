@@ -56,6 +56,7 @@ builder.Services.AddTransient<IEmailSender<AppUser>, IdentityEmailSender>();
 
 // Add services to the container
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<ITaskService, TaskService>();
 
 
 var app = builder.Build();
