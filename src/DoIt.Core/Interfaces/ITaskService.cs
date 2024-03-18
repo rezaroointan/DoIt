@@ -10,5 +10,9 @@ namespace DoIt.Core.Interfaces
     public interface ITaskService
     {
         Task<int> AddTaskAsync(AddTaskViewModel viewModel);
+
+        Task<List<InboxItemViewModel>> GetTasksForInbox();
+
+        Task<int> ChangeTaskStatusAsync(int taskID);
     }
 }

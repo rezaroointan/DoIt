@@ -1,4 +1,10 @@
 ﻿@page "/Inbox"
+@using DoIt.Core.DTOs.Tasks
+
+@inject NavigationManager NavigationManager
+@inject ITaskService TaskService
+
+@rendermode InteractiveServer
 
 <PageTitle>Inbox</PageTitle>
 
@@ -6,139 +12,35 @@
 
     <!-- Tasks list -->
     <ul class="list-group list-group-flush">
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-sun-fill"></i></small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-secondary"><del>Third checkbox</del></span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
-        <li class="list-group-item list-group-item-action">
-            <input class="form-check-input me-1" type="checkbox" value="" id="secondCheckbox">
-            <a style="text-decoration: none;" href="#">
-                <span class="text-black">Third checkbox</span>
-            </a>
-            <div class="d-flex w-100 mt-1">
-                <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Saturday </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> 17:23 </small>
-                <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> 2 h </small>
-            </div>
-        </li>
+        @foreach (var task in Tasks)
+        {
+            <li class="list-group-item list-group-item-action">
+                <input class="form-check-input me-1" @onchange="(e => OnChangeAsync(task.Id))" checked="@task.Done" type="checkbox" value="" id="secondCheckbox">
+                <a style="text-decoration: none;" href="#">
+                    @if (task.Done)
+                    {
+                        <span class="text-secondary">
+                            <del>@task.Title</del>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-black">
+                            @task.Title
+                        </span>
+                    }
+                </a>
+                <div class="d-flex w-100 mt-1">
+                    <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> @task.Duration.ToShortDateString() </small>
+                    <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> @task.Reminder.ToShortTimeString() </small>
+                    <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> @(task.TimeBlock.Hours):@(task.TimeBlock.Minutes) </small>
+                @if (task.Duration == DateOnly.FromDateTime(DateTime.Now))
+                {
+                        <small class="text-secondary mx-1"> <i class="bi bi-sun-fill"></i></small>
+                }
+                </div>
+            </li>
+        }
     </ul>
 
     <hr />
@@ -146,6 +48,25 @@
 
 <!--Add Task Button-->
 <a href="/AddTask"
-        class="btn btn-primary btn-add btn-floating btn-lg">
+   class="btn btn-primary btn-add btn-floating btn-lg">
     <i class="bi bi-plus"></i>
 </a>
+
+@code {
+    // Page view model
+    private List<InboxItemViewModel> Tasks { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Tasks = await TaskService.GetTasksForInbox();
+    }
+
+    private async Task OnChangeAsync(int id)
+    {
+        // Change task status
+        int result = await TaskService.ChangeTaskStatusAsync(id);
+
+        // Refresh the page
+        NavigationManager.NavigateTo("/Inbox", true);
+    }
+}
