@@ -27,6 +27,8 @@ namespace DoIt.Data.Entities.Tasks
 
         public TimeSpan TimeBlock { get; set; }
 
+        public bool Done { get; set; }
+
         public string UserId { get; set; }
 
         #region Relations
