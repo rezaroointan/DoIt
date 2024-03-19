@@ -127,6 +127,28 @@ namespace DoIt.Core.Services
             return await System.Threading.Tasks.Task.FromResult(viewModel);
         }
 
+        public async Task<List<InboxItemViewModel>> GetTaskForPlannedAsync()
+        {
+            // Retrieve list of tasks
+            var tasks = await _db.Tasks
+                .Where(t => t.Duration != DateOnly.FromDateTime(DateTime.UtcNow))
+                .Select(t => new InboxItemViewModel()
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Created = t.Created,
+                Duration = t.Duration,
+                Reminder = t.Reminder,
+                Done = t.Done,
+                TimeBlock = t.TimeBlock
+            })
+                .OrderBy(t => t.Created)
+                .ToListAsync();
+
+            // Return tasks
+            return tasks;
+        }
+
         public async Task<List<InboxItemViewModel>> GetTasksForInboxAsync()
         {
             // Retrieve list of tasks

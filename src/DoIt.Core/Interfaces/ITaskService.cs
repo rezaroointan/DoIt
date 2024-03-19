@@ -22,5 +22,7 @@ namespace DoIt.Core.Interfaces
         Task<int> DeleteTaskAsync(int id);
 
         Task<List<InboxItemViewModel>> GetTasksForTodayAsync();
+
+        Task<List<InboxItemViewModel>> GetTaskForPlannedAsync();
     }
 }
