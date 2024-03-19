@@ -1,0 +1,131 @@
+﻿@page "/EditTask/{id:int}"
+
+@using DoIt.Core.DTOs.Tasks
+@using DoIt.Core.Interfaces
+@using DoIt.Data.Entities.Users
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+
+@inject IdentityUserAccessor UserAccessor
+@inject UserManager<AppUser> UserManager
+@inject ITaskService TaskService
+@inject NavigationManager NavigationManager
+
+@rendermode InteractiveServer
+
+<PageTitle>Edit Task</PageTitle>
+
+<div class="container">
+
+    <EditForm method="post" Model="ViewModel" OnValidSubmit="EditTaskAsync" FormName="editTask" Enhance>
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- Task -->
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="ViewModel.Title" class="form-control" aria-required="true" placeholder="add a task" />
+            <label for="task">Task</label>
+            <ValidationMessage For="() => ViewModel.Title" class="text-danger" />
+        </div>
+
+        <!-- Duration -->
+        <div class="form-floating mb-3">
+            <InputDate @bind-Value="ViewModel.Duration" class="form-control" placeholder="date" />
+            <label for="task">Duration</label>
+            <ValidationMessage For="() => ViewModel.Duration" class="text-danger" />
+        </div>
+
+        <!-- Reminder -->
+        <div class="form-floating mb-3">
+            <input @bind-value="ViewModel.Reminder" type="time" class="form-control" placeholder="reminder" />
+            <label for="task">Reminder</label>
+            <ValidationMessage For="() => ViewModel.Duration" class="text-danger" />
+        </div>
+
+        <!-- Time Blocking -->
+        <div class="row mb-3">
+            <label class="form-label" for="customRange1">Time Block</label>
+            <div class="input-group w-50">
+                <span class="input-group-text">Hours</span>
+                <InputNumber @bind-Value="ViewModel.TimeBlockHours" DisplayName="Hours" class="form-control" />
+            </div>
+            <div class="input-group w-50">
+                <span class="input-group-text">Minutes</span>
+                <InputNumber @bind-Value="ViewModel.TimeBlockMinutes" DisplayName="Minutes" class="form-control" />
+            </div>
+            <ValidationMessage For="() => ViewModel.TimeBlockHours" class="text-danger" />
+            <ValidationMessage For="() => ViewModel.TimeBlockMinutes" class="text-danger" />
+        </div>
+
+        <!-- Description -->
+        <div class="form-floating mb-3">
+            <InputTextArea @bind-Value="ViewModel.Description" class="form-control" placeholder="description" />
+            <label for="task">Description</label>
+            <ValidationMessage For="() => ViewModel.Duration" class="text-danger" />
+        </div>
+
+        <!-- Buttons -->
+        <div class="modal-footer">
+            <a href="/Inbox" class="btn btn-secondary">Back</a>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#deleteTask" class="btn btn-danger">Delete</button>
+            <button type="submit" class="btn btn-primary">Edit</button>
+        </div>
+    </EditForm>
+</div>
+
+<!-- Delete Task Modal -->
+<div class="modal fade" id="deleteTask" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Task</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you want the task to be deleted?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" @onclick="DeleteTaskAsync" class="btn btn-outline-danger">Yes Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Form view model
+    [SupplyParameterFromForm(FormName = "editTask")]
+    public EditTaskViewModel ViewModel { get; set; } = new();
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = await TaskService.GetTaskForEditAsync(Id);
+
+    }
+
+
+    public async Task EditTaskAsync()
+    {
+        int result = await TaskService.EditTaskAsync(ViewModel);
+
+        if(result != 0)
+        {
+            NavigationManager.NavigateTo("/Inbox");
+        }
+    }
+
+    public async Task DeleteTaskAsync()
+    {
+        int result = await TaskService.DeleteTaskAsync(Id);
+
+        if (result != 0)
+        {
+            NavigationManager.NavigateTo("/Inbox");
+        }
+    }
+}

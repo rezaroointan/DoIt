@@ -25,7 +25,7 @@ namespace DoIt.Core.Services
         {
             // Create TimeSpan from view model hours and minutes
             TimeSpan timeBlock = TimeSpan.FromMinutes((viewModel.TimeBlockHours * 60) + viewModel.TimeBlockMinutes);
-            
+
             // Init entity model
             DoIt.Data.Entities.Tasks.Task newTask = new()
             {
@@ -45,7 +45,7 @@ namespace DoIt.Core.Services
             return await _db.SaveChangesAsync();
         }
 
-        public async System.Threading.Tasks.Task<int> ChangeTaskStatusAsync(int taskID)
+        public async Task<int> ChangeTaskStatusAsync(int taskID)
         {
             // Retrieve task by id
             Data.Entities.Tasks.Task? task = await _db.Tasks.FindAsync(taskID);
@@ -62,10 +62,75 @@ namespace DoIt.Core.Services
             return await _db.SaveChangesAsync();
         }
 
+        public async Task<int> DeleteTaskAsync(int id)
+        {
+            // Retrieve task from DB by id
+            var task = await _db.Tasks.FindAsync(id);
+
+            // Check task is exist
+            if (task == null)
+                return await System.Threading.Tasks.Task.FromResult(0);
+
+            // Delete task and save changes
+            _db.Remove(task);
+            return await _db.SaveChangesAsync();
+        }
+
+        public async Task<int> EditTaskAsync(EditTaskViewModel viewModel)
+        {
+            // Retrieve task from DB
+            var task = await _db.Tasks.FindAsync(viewModel.Id);
+
+            if (task == null)
+                return await System.Threading.Tasks.Task.FromResult(0);
+
+            // Create TimeSpan from view model hours and minutes
+            TimeSpan timeBlock = TimeSpan.FromMinutes((viewModel.TimeBlockHours * 60) + viewModel.TimeBlockMinutes);
+
+            // Change entity model properties
+            task.Title = viewModel.Title;
+            task.Duration = viewModel.Duration;
+            task.Reminder = viewModel.Reminder;
+            task.TimeBlock = timeBlock;
+            task.Description = viewModel.Description;
+            task.UserId = viewModel.UserId;
+
+            // Update and save changes
+            _db.Tasks.Update(task);
+            return await _db.SaveChangesAsync();
+        }
+
+        public async Task<EditTaskViewModel?> GetTaskForEditAsync(int id)
+        {
+            // Retrieve task by id
+            var task = await _db.Tasks.FindAsync(id);
+
+            // Check task is exist
+            if (task == null)
+                return null;
+
+            // Init view model
+            EditTaskViewModel viewModel = new()
+            {
+                Id = task.Id,
+                Title = task.Title,
+                UserId = task.UserId,
+                Created = task.Created,
+                Duration = task.Duration,
+                Reminder = task.Reminder,
+                Description = task.Description,
+                TimeBlockHours = task.TimeBlock.Hours,
+                TimeBlockMinutes = task.TimeBlock.Minutes
+            };
+
+            // Return result
+            return await System.Threading.Tasks.Task.FromResult(viewModel);
+        }
+
         public async Task<List<InboxItemViewModel>> GetTasksForInbox()
         {
             // Retrieve list of tasks
-            var tasks =  await _db.Tasks.Select(t => new InboxItemViewModel()
+            var tasks = await _db.Tasks.Select(t => new InboxItemViewModel()
             {
                 Id = t.Id,
                 Title = t.Title,
@@ -75,7 +140,7 @@ namespace DoIt.Core.Services
                 Done = t.Done,
                 TimeBlock = t.TimeBlock
             })
-                .OrderBy(t => t.Created) 
+                .OrderBy(t => t.Created)
                 .ToListAsync();
 
             return tasks;

@@ -14,5 +14,11 @@ namespace DoIt.Core.Interfaces
         Task<List<InboxItemViewModel>> GetTasksForInbox();
 
         Task<int> ChangeTaskStatusAsync(int taskID);
+
+        Task<EditTaskViewModel?> GetTaskForEditAsync(int id);
+
+        Task<int> EditTaskAsync(EditTaskViewModel viewModel);
+
+        Task<int> DeleteTaskAsync(int id);
     }
 }
