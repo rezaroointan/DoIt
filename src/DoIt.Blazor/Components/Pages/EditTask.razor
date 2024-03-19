@@ -68,7 +68,7 @@
 
         <!-- Buttons -->
         <div class="modal-footer">
-            <a href="/Inbox" class="btn btn-secondary">Back</a>
+            <a @onclick="GoBack" class="btn btn-secondary">Back</a>
             <button type="button" data-bs-toggle="modal" data-bs-target="#deleteTask" class="btn btn-danger">Delete</button>
             <button type="submit" class="btn btn-primary">Edit</button>
         </div>
@@ -119,7 +119,7 @@
 
         if(result != 0)
         {
-            NavigationManager.NavigateTo(ReturnUrl);
+            GoBack();
         }
     }
 
@@ -129,7 +129,12 @@
 
         if (result != 0)
         {
-            NavigationManager.NavigateTo(ReturnUrl);
+            GoBack();
         }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo(ReturnUrl);
     }
 }

@@ -13,7 +13,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
-<PageTitle>AddTask</PageTitle>
+<PageTitle>Add Task</PageTitle>
 
 <div class="container">
 
@@ -67,7 +67,7 @@
 
         <!-- Buttons -->
         <div class="modal-footer">
-            <a @onclick="GoBackAsync" class="btn btn-secondary">Back</a>
+            <a onclick="history.back();" class="btn btn-secondary">Back</a>
             <button type="submit" class="btn btn-primary">Add</button>
         </div>
     </EditForm>
@@ -102,12 +102,12 @@
 
         if(result != 0)
         {
-            NavigationManager.NavigateTo(ReturnUrl, false);
+            NavigationManager.NavigateTo(ReturnUrl);
         }
     }
 
     private async Task GoBackAsync()
     {
-        NavigationManager.NavigateTo(ReturnUrl, false);
+        await JSRuntime.InvokeVoidAsync("history.back()");
     }
 }
