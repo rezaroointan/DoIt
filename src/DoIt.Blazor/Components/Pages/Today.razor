@@ -1,4 +1,4 @@
-﻿@page "/Inbox"
+﻿@page "/Today"
 @using DoIt.Core.DTOs.Tasks
 
 @inject NavigationManager NavigationManager
@@ -6,7 +6,7 @@
 
 @rendermode InteractiveServer
 
-<PageTitle>Inbox</PageTitle>
+<PageTitle>Today</PageTitle>
 
 <div class="container">
 
@@ -31,24 +31,14 @@
                     }
                 </a>
                 <div class="d-flex w-100 mt-1">
-                    <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> @task.Duration.ToShortDateString() </small>
+                    <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Today </small>
                     <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> @task.Reminder.ToShortTimeString() </small>
                     <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> @(task.TimeBlock.Hours):@(task.TimeBlock.Minutes) </small>
-                @if (task.Duration == DateOnly.FromDateTime(DateTime.Now))
-                {
-                        <small class="text-secondary mx-1"> <i class="bi bi-sun-fill"></i></small>
-                }
                 </div>
             </li>
         }
     </ul>
 </div>
-
-<!--Add Task Button-->
-<a href="/AddTask"
-   class="btn btn-primary btn-add btn-floating btn-lg">
-    <i class="bi bi-plus"></i>
-</a>
 
 @code {
     // Page view model
@@ -56,7 +46,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Tasks = await TaskService.GetTasksForInboxAsync();
+        Tasks = await TaskService.GetTasksForTodayAsync();
     }
 
     private async Task OnChangeAsync(int id)
@@ -65,6 +55,6 @@
         int result = await TaskService.ChangeTaskStatusAsync(id);
 
         // Refresh the page
-        NavigationManager.NavigateTo("/Inbox", true);
+        NavigationManager.NavigateTo("/Today", true);
     }
 }

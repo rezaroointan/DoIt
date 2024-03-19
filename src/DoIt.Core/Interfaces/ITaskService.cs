@@ -11,7 +11,7 @@ namespace DoIt.Core.Interfaces
     {
         Task<int> AddTaskAsync(AddTaskViewModel viewModel);
 
-        Task<List<InboxItemViewModel>> GetTasksForInbox();
+        Task<List<InboxItemViewModel>> GetTasksForInboxAsync();
 
         Task<int> ChangeTaskStatusAsync(int taskID);
 
@@ -20,5 +20,7 @@ namespace DoIt.Core.Interfaces
         Task<int> EditTaskAsync(EditTaskViewModel viewModel);
 
         Task<int> DeleteTaskAsync(int id);
+
+        Task<List<InboxItemViewModel>> GetTasksForTodayAsync();
     }
 }
