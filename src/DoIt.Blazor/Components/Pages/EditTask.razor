@@ -102,6 +102,10 @@
     [Parameter]
     public int Id { get; set; }
 
+    // Return url for navigate to that
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         ViewModel = await TaskService.GetTaskForEditAsync(Id);
@@ -115,7 +119,7 @@
 
         if(result != 0)
         {
-            NavigationManager.NavigateTo("/Inbox");
+            NavigationManager.NavigateTo(ReturnUrl);
         }
     }
 
@@ -125,7 +129,7 @@
 
         if (result != 0)
         {
-            NavigationManager.NavigateTo("/Inbox");
+            NavigationManager.NavigateTo(ReturnUrl);
         }
     }
 }

@@ -16,7 +16,7 @@
         {
             <li class="list-group-item list-group-item-action">
                 <input class="form-check-input me-1" @onchange="(e => OnChangeAsync(task.Id))" checked="@task.Done" type="checkbox" value="" id="secondCheckbox">
-                <a style="text-decoration: none;" href="/EditTask/@task.Id">
+                <a style="text-decoration: none;" href="/EditTask/@(task.Id)?ReturnUrl=@(NavigationManager.Uri.Split("/").Last())">
                     @if (task.Done)
                     {
                         <span class="text-secondary">

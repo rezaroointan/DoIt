@@ -11,6 +11,7 @@
 @inject UserManager<AppUser> UserManager
 @inject ITaskService TaskService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <PageTitle>AddTask</PageTitle>
 
@@ -66,7 +67,7 @@
 
         <!-- Buttons -->
         <div class="modal-footer">
-            <a href="/Inbox" class="btn btn-secondary">Back</a>
+            <a @onclick="GoBackAsync" class="btn btn-secondary">Back</a>
             <button type="submit" class="btn btn-primary">Add</button>
         </div>
     </EditForm>
@@ -81,6 +82,10 @@
     // Http context for get current user info
     [CascadingParameter]
     public HttpContext HttpContext { get; set; } = default!;
+
+    // Return url for navigate to that
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,7 +102,12 @@
 
         if(result != 0)
         {
-            NavigationManager.NavigateTo("/Inbox", false);
+            NavigationManager.NavigateTo(ReturnUrl, false);
         }
+    }
+
+    private async Task GoBackAsync()
+    {
+        NavigationManager.NavigateTo(ReturnUrl, false);
     }
 }
