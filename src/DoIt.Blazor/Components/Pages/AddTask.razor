@@ -87,11 +87,8 @@
         // Get current user info
         var user = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
-        ViewModel.Duration = DateOnly.FromDateTime(DateTime.Now); // Set Duration by default to current date
-        ViewModel.Reminder = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)); // Set Reminder by default to 9 AM
         ViewModel.UserId = await UserManager.GetUserIdAsync(user); // Get UserId to current user id
     }
-
 
     public async Task AddNewTask()
     {
