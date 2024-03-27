@@ -13,34 +13,44 @@
 
 <div class="container">
 
-    <!-- Tasks list -->
-    <ul class="list-group list-group-flush">
-        @foreach (var task in Tasks)
-        {
-            <li class="list-group-item list-group-item-action">
-                <input class="form-check-input me-1" @onchange="(e => OnChangeAsync(task.Id))" checked="@task.Done" type="checkbox" value="" id="secondCheckbox">
-                <a style="text-decoration: none;" href="/EditTask/@task.Id?ReturnUrl=@(NavigationManager.Uri.Split("/").Last())">
-                    @if (task.Done)
-                    {
-                        <span class="text-secondary">
-                            <del>@task.Title</del>
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="text-black">
-                            @task.Title
-                        </span>
-                    }
-                </a>
-                <div class="d-flex w-100 mt-1">
-                    <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Today </small>
-                    <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> @task.Reminder.ToShortTimeString() </small>
-                    <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> @(task.TimeBlock.Hours):@(task.TimeBlock.Minutes) </small>
-                </div>
-            </li>
-        }
-    </ul>
+    <!-- Check any task exist -->
+    @if(Tasks is null || Tasks.Any() is false)
+    {
+        <div class="position-relative">
+            <span class="bi-journal-empty position-absolute top-50 start-50"></span>
+        </div>
+    }
+    else
+    {
+        <!-- Tasks list -->
+        <ul class="list-group list-group-flush">
+            @foreach (var task in Tasks)
+            {
+                <li class="list-group-item list-group-item-action">
+                    <input class="form-check-input me-1" @onchange="(e => OnChangeAsync(task.Id))" checked="@task.Done" type="checkbox" value="" id="secondCheckbox">
+                    <a style="text-decoration: none;" href="/EditTask/@task.Id?ReturnUrl=@(NavigationManager.Uri.Split("/").Last())">
+                        @if (task.Done)
+                        {
+                            <span class="text-secondary">
+                                <del>@task.Title</del>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-black">
+                                @task.Title
+                            </span>
+                        }
+                    </a>
+                    <div class="d-flex w-100 mt-1">
+                        <small class="text-secondary mx-1"> <i class="bi bi-calendar2"></i> Today </small>
+                        <small class="text-secondary mx-1"> <i class="bi bi-bell"></i> @task.Reminder.ToShortTimeString() </small>
+                        <small class="text-secondary mx-1"> <i class="bi bi-clock-history"></i> @(task.TimeBlock.Hours):@(task.TimeBlock.Minutes) </small>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
 </div>
 
 @code {
