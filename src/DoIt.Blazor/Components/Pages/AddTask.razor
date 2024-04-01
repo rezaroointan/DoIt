@@ -1,7 +1,5 @@
 ﻿@page "/AddTask"
 
-@attribute [Authorize]
-
 @using DoIt.Core.DTOs.Tasks
 @using DoIt.Core.Interfaces
 @using DoIt.Data.Entities.Users
@@ -14,6 +12,8 @@
 @inject ITaskService TaskService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+
+@attribute [Authorize]
 
 <PageTitle>Add Task</PageTitle>
 
@@ -94,6 +94,12 @@
         // Get current user info
         var user = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
+        // Check duration default value is invalid
+        if(ViewModel.Duration == DateOnly.FromDayNumber(0))
+        {
+            ViewModel.Duration = DateOnly.FromDateTime(DateTime.Now); // Set duration default value to today date
+        }
+
         ViewModel.UserId = await UserManager.GetUserIdAsync(user); // Get UserId to current user id
     }
 
@@ -102,7 +108,7 @@
         // Add new task
         int result = await TaskService.AddTaskAsync(ViewModel);
 
-        if(result != 0)
+        if (result != 0)
         {
             NavigationManager.NavigateTo(ReturnUrl);
         }
