@@ -24,32 +24,42 @@ namespace DoIt.Blazor.Authentication
 
         public async Task SendConfirmationLinkAsync(AppUser user, string email, string confirmationLink)
         {
-            // Email content
-            using MailMessage message = new();
-            message.Subject = "Email Confirmation";
-            message.From = new MailAddress("m.roointan.10@gmail.com");
-            message.To.Add(email);
-            message.Body = $"<a href='{confirmationLink}'>Click her</a> to confirm your account.";
-            message.IsBodyHtml = true;
+            // Email API parameters
+            Dictionary<string, string> parameters = new() {
+                { "fromeName" , _configuration["EmailService:FromName"]! },
+                { "from" , _configuration["EmailService:From"]! },
+                { "apikey" , _configuration["EmailService:ApiKey"]! },
+                { "to" , email },
+                { "subject" , "Email Confirmation" },
+                { "bodyText" , "" },
+                { "bodyHtml" , $"<a href='{confirmationLink}'>Click her</a> to confirm your account." },
+                { "isTransactional" , "true" },
+            };
 
-            // Send email using SMTP
-            using (var client = new SmtpClient())
+            // Send
+            string response = await SedAsync(parameters);
+        }
+
+        private async Task<string> SedAsync(Dictionary<string, string> parameters)
+        {
+            using HttpClient httpClient = new();
+            try
             {
-                // Email sender credential
-                NetworkCredential credential = new()
-                {
-                    UserName = "m.roointan.10@gmail.com",
-                    Password = "ECDF87A6643FFF69ACA82B5976D91411284D"
-                };
+                var content = new FormUrlEncodedContent(parameters);
+                HttpResponseMessage response = await httpClient.PostAsync(_configuration["EmailService:ApiAddress"], content);
 
-                // SMTP client
-                client.Credentials = credential;
-                client.Host = "smtp.elasticemail.com";
-                client.Port = 2525;
-                client.EnableSsl = true;
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
 
-                // Send
-                client.Send(message);
+                return responseBody;
+            }
+            catch (HttpRequestException e)
+            {
+                return $"Request error: {e.Message}\n{e.StackTrace}";
+            }
+            catch (Exception e)
+            {
+                return $"Exception caught: {e.Message}\n{e.StackTrace}";
             }
         }
 
